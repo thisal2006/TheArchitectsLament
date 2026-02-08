@@ -12,7 +12,6 @@ class DialogueSystem {
         this.currentLine = 0;
         this.choices = dialogue.choices || [];
         this.updateUI();
-        this.typeNextLine();
     }
 
     nextLine() {
@@ -24,40 +23,68 @@ class DialogueSystem {
         return false;
     }
 
-    typeNextLine() {
+    typeCurrentLine() {
         const line = this.currentDialogue.lines[this.currentLine];
         this.typewriter.type(line);
-    }
-
-    showChoicesIfReady() {
-        if (this.currentLine === this.currentDialogue.lines.length - 1) {
-            this.showChoices();
-        }
     }
 
     updateUI() {
         const dialogue = this.currentDialogue;
         if (!dialogue) return;
 
-        document.getElementById('speaker').textContent = dialogue.speaker || 'Unknown';
-        this.typeNextLine();
-        
+        document.getElementById('speaker').textContent =
+            dialogue.speaker || 'Unknown';
+
         const choicesDiv = document.getElementById('choices');
         choicesDiv.innerHTML = '';
-        
-        if (this.currentLine === dialogue.lines.length - 1 && this.choices.length > 0) {
-            this.choices.forEach((choice, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'choice-btn';
-                btn.textContent = `${index + 1}. ${choice.text}`;
-                btn.onclick = () => this.makeChoice(choice);
-                choicesDiv.appendChild(btn);
-            });
+
+        this.typeCurrentLine();
+    }
+
+    // =============================
+    // NEW FLOW CONTROL
+    // =============================
+
+    showChoicesIfReady() {
+        if (this.currentLine === this.currentDialogue.lines.length - 1) {
+            this.showChoices();
+        } else {
+            this.showContinuePrompt();
         }
     }
 
+    showContinuePrompt() {
+        const continueBtn = document.createElement('button');
+        continueBtn.textContent = 'Continue (Space)';
+        continueBtn.className = 'continue-btn';
+        continueBtn.onclick = () => this.nextLine();
+
+        const choicesDiv = document.getElementById('choices');
+        choicesDiv.innerHTML = '';
+        choicesDiv.appendChild(continueBtn);
+    }
+
+    showChoices() {
+        const choicesDiv = document.getElementById('choices');
+        choicesDiv.innerHTML = '';
+
+        this.choices.forEach((choice) => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+
+            btn.innerHTML = `
+                ${choice.text}
+                <span class="moral-value ${choice.moralValue > 0 ? 'positive' : 'negative'}">
+                    ${choice.moralValue > 0 ? '+' : ''}${choice.moralValue}
+                </span>
+            `;
+
+            btn.onclick = () => this.makeChoice(choice);
+            choicesDiv.appendChild(btn);
+        });
+    }
+
     makeChoice(choice) {
-        // 🔊 Play sound when a choice is made
         if (typeof soundSystem !== 'undefined') {
             soundSystem.play('choice');
         }
@@ -66,11 +93,11 @@ class DialogueSystem {
             choice: choice,
             dialogueId: this.currentDialogue.id
         });
-        
+
         if (choice.consequence) {
             alert(choice.consequence);
         }
-        
+
         this.currentDialogue = null;
         this.choices = [];
     }
