@@ -1,10 +1,28 @@
 class Game {
     constructor() {
-        this.currentAct = 1;
-        this.moralScore = 0;
-        this.choices = [];
-        this.init();
-    }
+    this.currentAct = 1;
+    this.moralScore = 0;
+    this.choices = [];
+    this.scoreDisplay = document.createElement('div');
+    this.scoreDisplay.id = 'moral-score';
+    this.scoreDisplay.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+    `;
+    document.body.appendChild(this.scoreDisplay);
+    this.updateScoreDisplay();
+    this.init();
+}
+
+updateScoreDisplay() {
+    this.scoreDisplay.textContent = `Moral: ${this.moralScore} | Act: ${this.currentAct}`;
+}
 
     init() {
         document.getElementById('start-btn').addEventListener('click', () => {
@@ -14,6 +32,7 @@ class Game {
         eventBus.subscribe(Events.CHOICE_MADE, (data) => {
             this.choices.push(data);
             this.moralScore += data.choice.moralValue || 0;
+            this.updateScoreDisplay();
             this.nextAct();
         });
     }
