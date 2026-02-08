@@ -13,7 +13,6 @@ class DialogueSystem {
         this.choices = dialogue.choices || [];
         this.updateUI();
         this.typeNextLine();
-
     }
 
     nextLine() {
@@ -25,7 +24,6 @@ class DialogueSystem {
         return false;
     }
 
-    
     typeNextLine() {
         const line = this.currentDialogue.lines[this.currentLine];
         this.typewriter.type(line);
@@ -59,6 +57,11 @@ class DialogueSystem {
     }
 
     makeChoice(choice) {
+        // 🔊 Play sound when a choice is made
+        if (typeof soundSystem !== 'undefined') {
+            soundSystem.play('choice');
+        }
+
         eventBus.emit(Events.CHOICE_MADE, {
             choice: choice,
             dialogueId: this.currentDialogue.id
