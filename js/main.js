@@ -64,6 +64,21 @@ class Game {
                     { text: 'Pardon him (show mercy)', moralValue: 2 },
                     { text: 'Imprison him (compromise)', moralValue: -1 }
                 ]
+            },
+            3: {
+                id: 'act3',
+                speaker: 'WHISPERING VOICE',
+                lines: [
+                    'You awake in a decaying mansion. The air is cold.',
+                    'A spirit appears before you - a mother searching for her child.',
+                    'She offers you freedom in exchange for finding her child.',
+                    'But you sense the child is long gone...'
+                ],
+                choices: [
+                    { text: 'Promise to find the child (lie)', moralValue: -4 },
+                    { text: 'Tell her the truth (the child is gone)', moralValue: 3 },
+                    { text: 'Ignore her and search for exit', moralValue: -2 }
+                ]
             }
         };
 
@@ -74,7 +89,7 @@ class Game {
 
     nextAct() {
         this.currentAct++;
-        if (this.currentAct <= 4) {
+        if (this.currentAct <= 3) {
             this.loadAct(this.currentAct);
         } else {
             this.endGame();
