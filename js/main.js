@@ -87,6 +87,53 @@ class Game {
         document.getElementById('start-btn').addEventListener('click', () => {
             this.startGame();
         });
+            const statsBtn = document.createElement('button');
+            statsBtn.textContent = 'VIEW STATISTICS';
+            statsBtn.className = 'btn-secondary';
+            statsBtn.style.marginTop = '10px';
+            statsBtn.onclick = () => this.showStatsScreen();
+            document.getElementById('title-screen').querySelector('.menu').appendChild(statsBtn);
+            
+            // Stats screen elements
+            this.statsScreen = document.getElementById('stats-screen');
+            this.statsContent = document.getElementById('stats-content');
+            this.closeStatsBtn = document.getElementById('close-stats-btn');
+            this.exportStatsBtn = document.getElementById('export-stats-btn');
+            this.resetStatsBtn = document.getElementById('reset-stats-btn');
+            
+            this.closeStatsBtn.onclick = () => this.hideStatsScreen();
+            this.exportStatsBtn.onclick = () => this.exportStats();
+            this.resetStatsBtn.onclick = () => this.resetStats();
+        }
+
+        showStatsScreen() {
+            this.statsContent.textContent = statistics.generateReport();
+            this.titleScreen.classList.remove('active');
+            this.statsScreen.classList.add('active');
+        }
+
+        hideStatsScreen() {
+            this.statsScreen.classList.remove('active');
+            this.titleScreen.classList.add('active');
+        }
+
+        exportStats() {
+            const stats = statistics.getStats();
+            const blob = new Blob([JSON.stringify(stats, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `architect_stats_${saveSystem.subjectId}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        resetStats() {
+            if (confirm('Are you sure you want to reset all statistics? This cannot be undone.')) {
+                statistics.reset();
+                this.statsContent.textContent = statistics.generateReport();
+                alert('Statistics reset complete.');
+            }
 
         eventBus.subscribe(Events.CHOICE_MADE, (data) => {
             this.choices.push(data);
