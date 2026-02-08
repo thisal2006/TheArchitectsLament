@@ -8,11 +8,13 @@
 </head>
 <body>
     <div id="game-container">
+
         <div id="title-screen" class="screen active">
             <h1>THE ARCHITECT'S LAMENT</h1>
             <p>A journey through simulated realities</p>
             <button id="start-btn">BEGIN EXPERIMENT</button>
         </div>
+
         <div id="game-screen" class="screen">
             <div id="dialogue-box">
                 <div id="speaker"></div>
@@ -20,7 +22,22 @@
                 <div id="choices"></div>
             </div>
         </div>
+
+        <!-- ✅ NEW STATS SCREEN -->
+        <div id="stats-screen" class="screen">
+            <div class="stats-container">
+                <h2>EXPERIMENT STATISTICS</h2>
+                <div id="stats-content"></div>
+                <div class="stats-buttons">
+                    <button id="close-stats-btn" class="btn-primary">RETURN</button>
+                    <button id="export-stats-btn" class="btn-secondary">EXPORT DATA</button>
+                    <button id="reset-stats-btn" class="btn-danger">RESET STATS</button>
+                </div>
+            </div>
+        </div>
+
     </div>
+
     <script src="js/main.js"></script>
 </body>
 </html>
