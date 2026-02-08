@@ -1,28 +1,62 @@
 class Game {
     constructor() {
-    this.currentAct = 1;
-    this.moralScore = 0;
-    this.choices = [];
-    this.scoreDisplay = document.createElement('div');
-    this.scoreDisplay.id = 'moral-score';
-    this.scoreDisplay.style.cssText = `
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-family: monospace;
-    `;
-    document.body.appendChild(this.scoreDisplay);
-    this.updateScoreDisplay();
-    this.init();
-}
+        this.currentAct = 1;
+        this.moralScore = 0;
+        this.choices = [];
 
-updateScoreDisplay() {
-    this.scoreDisplay.textContent = `Moral: ${this.moralScore} | Act: ${this.currentAct}`;
-}
+        // ===== Moral Score Display =====
+        this.scoreDisplay = document.createElement('div');
+        this.scoreDisplay.id = 'moral-score';
+        this.scoreDisplay.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        `;
+        document.body.appendChild(this.scoreDisplay);
+
+        // ===== Skip Button =====
+        this.skipButton = document.createElement('button');
+        this.skipButton.textContent = 'Skip (Space)';
+        this.skipButton.style.cssText = `
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        `;
+        document.body.appendChild(this.skipButton);
+
+        this.skipButton.addEventListener('click', () => {
+            if (dialogueSystem?.typewriter) {
+                dialogueSystem.typewriter.complete();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (dialogueSystem?.typewriter) {
+                    dialogueSystem.typewriter.complete();
+                }
+            }
+        });
+
+        this.updateScoreDisplay();
+        this.init();
+    }
+
+    updateScoreDisplay() {
+        this.scoreDisplay.textContent = `Moral: ${this.moralScore} | Act: ${this.currentAct}`;
+    }
 
     init() {
         document.getElementById('start-btn').addEventListener('click', () => {
@@ -40,18 +74,18 @@ updateScoreDisplay() {
     startGame() {
         document.getElementById('title-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
-        
+
         eventBus.emit(Events.GAME_START, {
             subjectId: saveSystem.subjectId,
             timestamp: new Date()
         });
-        
+
         this.loadAct(1);
     }
 
     loadAct(actNumber) {
         this.currentAct = actNumber;
-        
+
         const acts = {
             1: {
                 id: 'act1',
@@ -68,7 +102,6 @@ updateScoreDisplay() {
                     { text: 'Try to save both (risk losing both)', moralValue: 1 }
                 ]
             },
-
             2: {
                 id: 'act2',
                 speaker: 'KING ARCTURUS',
@@ -123,7 +156,9 @@ updateScoreDisplay() {
 
     nextAct() {
         this.currentAct++;
-        if (this.currentAct <= 3) {
+        this.updateScoreDisplay();
+
+        if (this.currentAct <= 4) {
             this.loadAct(this.currentAct);
         } else {
             this.endGame();
@@ -132,14 +167,14 @@ updateScoreDisplay() {
 
     endGame() {
         alert(`Game Over!\nMoral Score: ${this.moralScore}\nTotal Choices: ${this.choices.length}`);
-        
+
         const saveData = {
             act: this.currentAct,
             moralScore: this.moralScore,
             choices: this.choices,
             timestamp: new Date().toISOString()
         };
-        
+
         saveSystem.save(saveData);
     }
 }
