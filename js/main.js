@@ -48,6 +48,22 @@ class Game {
                     { text: 'Save the medic (only medical expert on board)', moralValue: -2 },
                     { text: 'Try to save both (risk losing both)', moralValue: 1 }
                 ]
+            },
+
+            2: {
+                id: 'act2',
+                speaker: 'KING ARCTURUS',
+                lines: [
+                    'Welcome, Sir Knight. The prisoner has confessed.',
+                    'He stole bread during the famine to feed his family.',
+                    'The law demands execution for theft from the royal stores.',
+                    'What is your judgment?'
+                ],
+                choices: [
+                    { text: 'Execute him (uphold the law)', moralValue: -3 },
+                    { text: 'Pardon him (show mercy)', moralValue: 2 },
+                    { text: 'Imprison him (compromise)', moralValue: -1 }
+                ]
             }
         };
 
