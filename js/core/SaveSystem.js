@@ -2,6 +2,8 @@ class SaveSystem {
     constructor() {
         this.saveKey = 'architect_save';
         this.subjectId = this.generateSubjectId();
+        this.autoSaveInterval = null;
+        this.startAutoSave();
     }
 
     generateSubjectId() {
@@ -14,8 +16,10 @@ class SaveSystem {
             timestamp: new Date().toISOString(),
             data: gameData
         };
+
         localStorage.setItem(this.saveKey, JSON.stringify(save));
         eventBus.emit(Events.SAVE_GAME, save);
+
         return save;
     }
 
@@ -26,6 +30,39 @@ class SaveSystem {
 
     clear() {
         localStorage.removeItem(this.saveKey);
+    }
+
+    // ======================
+    // 🔄 AUTO SAVE FEATURE
+    // ======================
+
+    startAutoSave() {
+        this.autoSaveInterval = setInterval(() => {
+            if (window.game) {
+                this.autoSave();
+            }
+        }, 30000); // Every 30 seconds
+    }
+
+    autoSave() {
+        if (!window.game) return;
+
+        const gameData = {
+            act: window.game.currentAct,
+            moralScore: window.game.moralScore,
+            choices: window.game.choices,
+            timestamp: new Date().toISOString()
+        };
+
+        this.save(gameData);
+        console.log('Game auto-saved');
+    }
+
+    stopAutoSave() {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
     }
 }
 
