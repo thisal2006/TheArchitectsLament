@@ -3,6 +3,8 @@ class DialogueSystem {
         this.currentDialogue = null;
         this.currentLine = 0;
         this.choices = [];
+        this.typewriter = new Typewriter(document.getElementById('text'), 40);
+        this.typewriter.onComplete = () => this.showChoicesIfReady();
     }
 
     start(dialogue) {
@@ -10,6 +12,8 @@ class DialogueSystem {
         this.currentLine = 0;
         this.choices = dialogue.choices || [];
         this.updateUI();
+        this.typeNextLine();
+
     }
 
     nextLine() {
@@ -21,12 +25,24 @@ class DialogueSystem {
         return false;
     }
 
+    
+    typeNextLine() {
+        const line = this.currentDialogue.lines[this.currentLine];
+        this.typewriter.type(line);
+    }
+
+    showChoicesIfReady() {
+        if (this.currentLine === this.currentDialogue.lines.length - 1) {
+            this.showChoices();
+        }
+    }
+
     updateUI() {
         const dialogue = this.currentDialogue;
         if (!dialogue) return;
 
         document.getElementById('speaker').textContent = dialogue.speaker || 'Unknown';
-        document.getElementById('text').textContent = dialogue.lines[this.currentLine];
+        this.typeNextLine();
         
         const choicesDiv = document.getElementById('choices');
         choicesDiv.innerHTML = '';
