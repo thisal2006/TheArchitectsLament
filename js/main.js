@@ -4,13 +4,12 @@ class Game {
         this.moralScore = 0;
         this.choices = [];
 
-        // Show loading screen first
+        // Initial loading screen
         if (typeof loadingScreen !== 'undefined') {
             loadingScreen.show();
             loadingScreen.simulateLoad(10);
         }
 
-        // Delay initialization until loading completes
         setTimeout(() => {
             this.initUI();
             this.init();
@@ -22,7 +21,6 @@ class Game {
     // =========================
     initUI() {
 
-        // ===== Moral Score Display =====
         this.scoreDisplay = document.createElement('div');
         this.scoreDisplay.id = 'moral-score';
         this.scoreDisplay.style.cssText = `
@@ -37,7 +35,6 @@ class Game {
         `;
         document.body.appendChild(this.scoreDisplay);
 
-        // ===== Skip Button =====
         this.skipButton = document.createElement('button');
         this.skipButton.textContent = 'Skip (Space)';
         this.skipButton.style.cssText = `
@@ -99,21 +96,46 @@ class Game {
         });
     }
 
+    // =========================
+    // UPDATED START GAME
+    // =========================
     startGame() {
-        document.getElementById('title-screen').classList.remove('active');
-        document.getElementById('game-screen').classList.add('active');
+        if (typeof loadingScreen !== 'undefined') {
+            loadingScreen.show();
+            loadingScreen.simulateLoad(5);
+        }
 
-        eventBus.emit(Events.GAME_START, {
-            subjectId: saveSystem.subjectId,
-            timestamp: new Date()
-        });
+        setTimeout(() => {
+            document.getElementById('title-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
 
-        this.loadAct(1);
+            if (typeof loadingScreen !== 'undefined') {
+                loadingScreen.hide();
+            }
+
+            eventBus.emit(Events.GAME_START, {
+                subjectId: saveSystem.subjectId,
+                timestamp: new Date()
+            });
+
+            if (typeof statistics !== 'undefined') {
+                statistics.startAct(1);
+            }
+
+            this.loadAct(1);
+        }, 2500);
     }
 
+    // =========================
+    // UPDATED LOAD ACT
+    // =========================
     loadAct(actNumber) {
         this.currentAct = actNumber;
         this.updateScoreDisplay();
+
+        if (typeof statistics !== 'undefined') {
+            statistics.startAct(actNumber);
+        }
 
         const acts = {
             1: {
@@ -209,5 +231,4 @@ class Game {
     }
 }
 
-// IMPORTANT for autosave system
 window.game = new Game();
