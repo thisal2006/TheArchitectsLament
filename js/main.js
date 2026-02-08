@@ -79,6 +79,21 @@ class Game {
                     { text: 'Tell her the truth (the child is gone)', moralValue: 3 },
                     { text: 'Ignore her and search for exit', moralValue: -2 }
                 ]
+            },
+            4: {
+                id: 'act4',
+                speaker: 'OFFICE MANAGER',
+                lines: [
+                    'Performance review time. Your colleague has been slacking.',
+                    'You know he has family issues, but the company needs results.',
+                    'Your report determines if he gets fired or gets help.',
+                    'What do you recommend?'
+                ],
+                choices: [
+                    { text: 'Recommend termination (company first)', moralValue: -3 },
+                    { text: 'Recommend counseling (compassion first)', moralValue: 2 },
+                    { text: 'Stay neutral (avoid responsibility)', moralValue: -1 }
+                ]
             }
         };
 
