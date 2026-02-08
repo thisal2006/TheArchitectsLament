@@ -4,6 +4,24 @@ class Game {
         this.moralScore = 0;
         this.choices = [];
 
+        // Show loading screen first
+        if (typeof loadingScreen !== 'undefined') {
+            loadingScreen.show();
+            loadingScreen.simulateLoad(10);
+        }
+
+        // Delay initialization until loading completes
+        setTimeout(() => {
+            this.initUI();
+            this.init();
+        }, 3500);
+    }
+
+    // =========================
+    // UI INITIALIZATION
+    // =========================
+    initUI() {
+
         // ===== Moral Score Display =====
         this.scoreDisplay = document.createElement('div');
         this.scoreDisplay.id = 'moral-score';
@@ -36,28 +54,38 @@ class Game {
         document.body.appendChild(this.skipButton);
 
         this.skipButton.addEventListener('click', () => {
-            if (dialogueSystem?.typewriter) {
+            if (dialogueSystem?.typewriter?.isTyping) {
                 dialogueSystem.typewriter.complete();
+            } else {
+                dialogueSystem.nextLine();
             }
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                if (dialogueSystem?.typewriter) {
+
+                if (dialogueSystem?.typewriter?.isTyping) {
                     dialogueSystem.typewriter.complete();
+                } else {
+                    dialogueSystem.nextLine();
                 }
             }
         });
 
         this.updateScoreDisplay();
-        this.init();
     }
 
     updateScoreDisplay() {
-        this.scoreDisplay.textContent = `Moral: ${this.moralScore} | Act: ${this.currentAct}`;
+        if (this.scoreDisplay) {
+            this.scoreDisplay.textContent =
+                `Moral: ${this.moralScore} | Act: ${this.currentAct}`;
+        }
     }
 
+    // =========================
+    // GAME INITIALIZATION
+    // =========================
     init() {
         document.getElementById('start-btn').addEventListener('click', () => {
             this.startGame();
@@ -85,6 +113,7 @@ class Game {
 
     loadAct(actNumber) {
         this.currentAct = actNumber;
+        this.updateScoreDisplay();
 
         const acts = {
             1: {
@@ -156,7 +185,6 @@ class Game {
 
     nextAct() {
         this.currentAct++;
-        this.updateScoreDisplay();
 
         if (this.currentAct <= 4) {
             this.loadAct(this.currentAct);
@@ -166,7 +194,9 @@ class Game {
     }
 
     endGame() {
-        alert(`Game Over!\nMoral Score: ${this.moralScore}\nTotal Choices: ${this.choices.length}`);
+        alert(
+            `Game Over!\nMoral Score: ${this.moralScore}\nTotal Choices: ${this.choices.length}`
+        );
 
         const saveData = {
             act: this.currentAct,
@@ -179,4 +209,5 @@ class Game {
     }
 }
 
-const game = new Game();
+// IMPORTANT for autosave system
+window.game = new Game();
