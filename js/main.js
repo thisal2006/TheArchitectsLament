@@ -262,20 +262,45 @@ class Game {
         }
     }
 
-    endGame() {
-        alert(
-            `Game Over!\nMoral Score: ${this.moralScore}\nTotal Choices: ${this.choices.length}`
-        );
-
-        const saveData = {
-            act: this.currentAct,
-            moralScore: this.moralScore,
-            choices: this.choices,
-            timestamp: new Date().toISOString()
-        };
-
-        saveSystem.save(saveData);
+endGame() {
+    // Check if twist has been activated
+    if (twistSystem.twistActivated) {
+        // Twist endings handle their own display
+        return;
+    }
+    
+    // Original end game logic
+    alert(`Game Over!\nMoral Score: ${this.moralScore}\nTotal Choices: ${this.choices.length}`);
+    
+    const saveData = {
+        act: this.currentAct,
+        moralScore: this.moralScore,
+        choices: this.choices,
+        timestamp: new Date().toISOString()
+    };
+    
+    saveSystem.save(saveData);
+    
+    // Add chance to trigger twist on game completion
+    if (Math.abs(this.moralScore) > 10) {
+        setTimeout(() => {
+            if (confirm("Do you feel like you've been here before?")) {
+                twistSystem.giveHint();
+            }
+        }, 1000);
     }
 }
+
+}
+
+eventBus.subscribe('twist_activated', () => {
+    console.log('Twist activated - modifying game behavior');
+    
+    // Disable normal game flow
+    this.isRunning = false;
+    
+    // Hide normal UI
+    document.getElementById('game-screen').style.display = 'none';
+});
 
 window.game = new Game();
