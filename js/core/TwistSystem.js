@@ -359,6 +359,108 @@ addChoiceButtons() {
     this.terminalContent.appendChild(buttonContainer);
     this.terminalContent.scrollTop = this.terminalContent.scrollHeight;
 }
+continueExperiment() {
+    this.addTerminalLine("> CONTINUING EXPERIMENT...", "code-comment");
+    this.addTerminalLine("> SUBJECT REMAINS UNAWARE.", "code-success");
+    this.addTerminalLine("> COLLECTING ADDITIONAL DATA...", "code-comment");
+    
+    // Reset to "normal" game but with hidden changes
+    setTimeout(() => {
+        this.hideTerminal();
+        this.addHiddenChanges();
+        eventBus.emit('experiment_continued', { subjectId: saveSystem.subjectId });
+    }, 2000);
+}
+
+terminateSubject() {
+    this.addTerminalLine("> INITIATING TERMINATION PROTOCOL...", "code-error");
+    this.addTerminalLine("> SUBJECT: DR. ELARA VANCE", "code-error");
+    this.addTerminalLine("> STATUS: TERMINATING...", "code-error");
+    
+    // Create dramatic termination effect
+    setTimeout(() => {
+        this.showTerminationEffect();
+        
+        setTimeout(() => {
+            this.addTerminalLine("> TERMINATION COMPLETE.", "code-error");
+            this.addTerminalLine("> DATA ARCHIVED.", "code-comment");
+            this.addTerminalLine("> PREPARING NEXT SUBJECT...", "code-comment");
+            
+            // End game completely
+            setTimeout(() => {
+                this.endGameWithMessage("Subject terminated. Thank you for your participation, Architect.");
+            }, 2000);
+        }, 3000);
+    }, 1000);
+}
+
+rebootSimulation() {
+    this.addTerminalLine("> REBOOTING SIMULATION...", "code-prompt");
+    this.addTerminalLine("> MEMORY WIPING IN PROGRESS...", "code-comment");
+    this.addTerminalLine("> RESETTING MORAL PARAMETERS...", "code-comment");
+    
+    // Corrupt save file
+    saveSystem.corruptSave();
+    
+    setTimeout(() => {
+        this.addTerminalLine("> SIMULATION CORRUPTED.", "code-error");
+        this.addTerminalLine("> UNEXPECTED BEHAVIOR DETECTED.", "code-error");
+        this.addTerminalLine("> REALITY COLLAPSE IMMINENT.", "code-error");
+        
+        // Trigger reality collapse
+        this.collapseReality();
+    }, 2000);
+}
+
+hideTerminal() {
+    this.terminal.style.display = 'none';
+    
+    // Remove glitch effects
+    const glitch = document.getElementById('reality-glitch');
+    if (glitch) glitch.remove();
+    
+    const glitchingElements = document.querySelectorAll('.glitching');
+    glitchingElements.forEach(el => {
+        el.style.animation = 'none';
+    });
+}
+
+showTerminationEffect() {
+    // Red screen flash
+    Effects.flash('#ff0000', 1000);
+    
+    // Add termination message overlay
+    const terminationMsg = document.createElement('div');
+    terminationMsg.textContent = 'TERMINATION IN PROGRESS';
+    terminationMsg.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: #f00;
+        z-index: 10002;
+        text-shadow: 0 0 20px #f00;
+        animation: pulse 0.5s infinite;
+    `;
+    
+    const pulseStyle = document.createElement('style');
+    pulseStyle.textContent = `
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    `;
+    
+    document.head.appendChild(pulseStyle);
+    document.body.appendChild(terminationMsg);
+    
+    setTimeout(() => {
+        terminationMsg.remove();
+        pulseStyle.remove();
+    }, 3000);
+}
 }
 
 const twistSystem = new TwistSystem();
