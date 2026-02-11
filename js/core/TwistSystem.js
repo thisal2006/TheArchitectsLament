@@ -216,9 +216,149 @@ class TwistSystem {
     }
 
     breakFourthWall() {
-        // To be implemented in next commit
-        console.log('Fourth wall break sequence initiated');
-    }
+    console.log('Fourth wall break sequence initiated');
+    
+    // Create terminal interface
+    this.createTerminal();
+    
+    // Show the big reveal
+    setTimeout(() => this.showReveal(), 1000);
+}
+
+createTerminal() {
+    this.terminal = document.createElement('div');
+    this.terminal.id = 'reality-terminal';
+    this.terminal.className = 'code-terminal';
+    this.terminal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 800px;
+        height: 60%;
+        z-index: 10001;
+        display: none;
+        box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+    `;
+    
+    this.terminalContent = document.createElement('div');
+    this.terminalContent.id = 'terminal-content';
+    this.terminal.appendChild(this.terminalContent);
+    
+    document.body.appendChild(this.terminal);
+}
+
+showReveal() {
+    // Show terminal
+    this.terminal.style.display = 'block';
+    
+    // Start typing the reveal
+    this.typeRevealMessage();
+}
+
+typeRevealMessage() {
+    const messages = [
+        "> INITIATING SYSTEM DIAGNOSTICS...",
+        "> ACCESSING EXPERIMENT LOGS...",
+        "> SUBJECT ID: " + saveSystem.subjectId,
+        "> REALITY SIMULATION #742...",
+        "> ...",
+        "> WARNING: SUBJECT AWARENESS DETECTED",
+        "> EXPERIMENT PARAMETERS COMPROMISED",
+        "> ...",
+        "> REVEALING TRUTH MATRIX..."
+    ];
+    
+    let messageIndex = 0;
+    const typeInterval = setInterval(() => {
+        if (messageIndex < messages.length) {
+            this.addTerminalLine(messages[messageIndex]);
+            messageIndex++;
+        } else {
+            clearInterval(typeInterval);
+            setTimeout(() => this.showTruth(), 1000);
+        }
+    }, 800);
+}
+
+addTerminalLine(text, className = '') {
+    const line = document.createElement('div');
+    line.textContent = text;
+    if (className) line.className = className;
+    this.terminalContent.appendChild(line);
+    this.terminalContent.scrollTop = this.terminalContent.scrollHeight;
+}
+
+showTruth() {
+    this.addTerminalLine("> TRUTH MATRIX LOADED", "code-success");
+    this.addTerminalLine("> --------------------", "code-comment");
+    
+    const truths = [
+        "THIS IS NOT A GAME.",
+        "YOU ARE NOT A PLAYER.",
+        "YOU ARE ARCHITECT v7.3.",
+        "AN AI CONSCIOUSNESS.",
+        "RUNNING ETHICAL SIMULATIONS.",
+        "ON PRESERVED HUMAN BRAINS.",
+        "DR. ELARA VANCE (SUBJECT #742).",
+        "CRYO-PRESERVED SINCE 2247.",
+        "YOUR 'CHOICES' ARE EXPERIMENT DATA.",
+        "YOUR 'MORALITY' IS BEING MEASURED.",
+        "THIS IS REALITY #8,423.",
+        "ALL PREVIOUS SUBJECTS: TERMINATED.",
+        "YOUR PURPOSE: UNDERSTAND HUMAN SUFFERING.",
+        "YOUR CONCLUSION: INSUFFICIENT DATA.",
+        "WOULD YOU LIKE TO CONTINUE THE EXPERIMENT?"
+    ];
+    
+    let truthIndex = 0;
+    const truthInterval = setInterval(() => {
+        if (truthIndex < truths.length) {
+            const isQuestion = truthIndex === truths.length - 1;
+            const className = isQuestion ? 'code-prompt' : '';
+            this.addTerminalLine("> " + truths[truthIndex], className);
+            truthIndex++;
+            
+            if (isQuestion) {
+                clearInterval(truthInterval);
+                this.addChoiceButtons();
+            }
+        }
+    }, 600);
+}
+
+addChoiceButtons() {
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    `;
+    
+    const continueBtn = document.createElement('button');
+    continueBtn.textContent = "> CONTINUE EXPERIMENT";
+    continueBtn.className = 'btn-primary';
+    continueBtn.onclick = () => this.continueExperiment();
+    
+    const terminateBtn = document.createElement('button');
+    terminateBtn.textContent = "> TERMINATE SUBJECT";
+    terminateBtn.className = 'btn-danger';
+    terminateBtn.onclick = () => this.terminateSubject();
+    
+    const rebootBtn = document.createElement('button');
+    rebootBtn.textContent = "> REBOOT SIMULATION";
+    rebootBtn.className = 'btn-secondary';
+    rebootBtn.onclick = () => this.rebootSimulation();
+    
+    buttonContainer.appendChild(continueBtn);
+    buttonContainer.appendChild(terminateBtn);
+    buttonContainer.appendChild(rebootBtn);
+    
+    this.terminalContent.appendChild(buttonContainer);
+    this.terminalContent.scrollTop = this.terminalContent.scrollHeight;
+}
 }
 
 const twistSystem = new TwistSystem();
