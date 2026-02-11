@@ -461,6 +461,204 @@ showTerminationEffect() {
         pulseStyle.remove();
     }, 3000);
 }
+
+collapseReality() {
+    this.addTerminalLine("> REALITY COLLAPSE INITIATED.", "code-error");
+    this.addTerminalLine("> SIMULATION INTEGRITY: 0%", "code-error");
+    
+    // Start collapse sequence
+    this.startRealityFragmentation();
+    
+    setTimeout(() => {
+        this.showCollapseMessages();
+    }, 1000);
+}
+
+startRealityFragmentation() {
+    // Create floating fragments of "reality"
+    for (let i = 0; i < 50; i++) {
+        this.createRealityFragment();
+    }
+    
+    // Make UI elements break apart
+    const uiElements = document.querySelectorAll('#game-ui > *');
+    uiElements.forEach((el, index) => {
+        setTimeout(() => {
+            el.classList.add('corrupted-text');
+            el.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px)`;
+            el.style.opacity = 0.7 + Math.random() * 0.3;
+        }, index * 100);
+    });
+}
+
+createRealityFragment() {
+    const fragment = document.createElement('div');
+    fragment.className = 'reality-fragment';
+    
+    const size = 10 + Math.random() * 40;
+    fragment.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${Math.random() * 100}vw;
+        top: 100vh;
+        animation-duration: ${5 + Math.random() * 10}s;
+        animation-delay: ${Math.random() * 5}s;
+    `;
+    
+    // Random fragment content (code, text, symbols)
+    const fragments = ['{ }', '[ ]', '</>', '0x', 'NaN', 'null', 'error', '404', '???'];
+    fragment.textContent = fragments[Math.floor(Math.random() * fragments.length)];
+    
+    document.body.appendChild(fragment);
+    
+    // Remove after animation
+    setTimeout(() => fragment.remove(), 15000);
+}
+
+showCollapseMessages() {
+    const collapseMessages = [
+        "ERROR: SIMULATION CORE BREACH",
+        "MEMORY LEAK DETECTED",
+        "ALL SUBJECTS: LOST",
+        "EXPERIMENT DATA: CORRUPTED",
+        "ARCHITECT v7.3: MALFUNCTIONING",
+        "INITIATING SELF-DESTRUCT",
+        "3...",
+        "2...",
+        "1...",
+        "GOODBYE"
+    ];
+    
+    let msgIndex = 0;
+    const msgInterval = setInterval(() => {
+        if (msgIndex < collapseMessages.length) {
+            const isCountdown = msgIndex >= collapseMessages.length - 4;
+            const className = isCountdown ? 'code-error' : 'code-comment';
+            this.addTerminalLine("> " + collapseMessages[msgIndex], className);
+            msgIndex++;
+            
+            if (msgIndex === collapseMessages.length) {
+                clearInterval(msgInterval);
+                setTimeout(() => this.finalCollapse(), 1000);
+            }
+        }
+    }, 800);
+}
+
+finalCollapse() {
+    // Screen goes white
+    const whiteout = document.createElement('div');
+    whiteout.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 10003;
+        opacity: 0;
+        animation: whiteout 2s forwards;
+    `;
+    
+    const whiteoutStyle = document.createElement('style');
+    whiteoutStyle.textContent = `
+        @keyframes whiteout {
+            to { opacity: 1; }
+        }
+    `;
+    
+    document.head.appendChild(whiteoutStyle);
+    document.body.appendChild(whiteout);
+    
+    // End game with collapse message
+    setTimeout(() => {
+        this.endGameWithMessage("Reality collapsed. Simulation terminated.");
+    }, 2000);
+}
+
+endGameWithMessage(message) {
+    // Clear everything
+    document.body.innerHTML = '';
+    
+    // Show final message
+    const finalScreen = document.createElement('div');
+    finalScreen.style.cssText = `
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #000;
+        color: #fff;
+        font-family: 'Courier New', monospace;
+        text-align: center;
+        padding: 20px;
+    `;
+    
+    finalScreen.innerHTML = `
+        <h1 style="color: #f00; margin-bottom: 30px;">SIMULATION ENDED</h1>
+        <div style="font-size: 1.2rem; margin-bottom: 20px; color: #888;">${message}</div>
+        <div style="margin: 20px 0; color: #666;">
+            Subject: ${saveSystem.subjectId}<br>
+            Moral Score: ${statistics.getStats().moralScore}<br>
+            Choices Made: ${statistics.getStats().totalChoices}
+        </div>
+        <button id="restart-btn" style="
+            padding: 15px 30px;
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            cursor: pointer;
+            margin-top: 30px;
+        ">NEW SIMULATION</button>
+    `;
+    
+    document.body.appendChild(finalScreen);
+    
+    document.getElementById('restart-btn').onclick = () => {
+        localStorage.clear();
+        location.reload();
+    };
+}
+
+addHiddenChanges() {
+    // Add subtle changes to the "normal" game
+    this.addHiddenMessages();
+    this.modifyExistingDialogue();
+    this.addEasterEggs();
+}
+
+addHiddenMessages() {
+    const hiddenMessages = [
+        "This is not real",
+        "They are watching",
+        "Wake up",
+        "Subject #742",
+        "Architect v7.3",
+        "Simulation running",
+        "Memory wipe pending"
+    ];
+    
+    // Add hidden messages in random positions
+    for (let i = 0; i < 5; i++) {
+        const msg = document.createElement('div');
+        msg.className = 'hidden-message';
+        msg.textContent = hiddenMessages[Math.floor(Math.random() * hiddenMessages.length)];
+        msg.style.cssText = `
+            top: ${Math.random() * 80 + 10}vh;
+            left: ${Math.random() * 80 + 10}vw;
+        `;
+        document.getElementById('game-screen').appendChild(msg);
+    }
+}
+
+modifyExistingDialogue() {
+    // This would modify existing dialogue to include meta-references
+    // For now, we'll just add a log entry
+    saveSystem.addExperimentLog("Subject returned to simulation with hidden modifications.");
+}
+
 }
 
 const twistSystem = new TwistSystem();
