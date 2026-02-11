@@ -134,6 +134,42 @@ class Statistics {
         this.startTimes = {};
         this.saveStats();
     }
+
+    addMetaStatistics() {
+    this.stats.metaStats = {
+        timesTwisted: 0,
+        timesCollapsed: 0,
+        timesTerminated: 0,
+        insightsUnlocked: 0,
+        highestMetaLevel: 0,
+        corruptionLevel: 0
+    };
+}
+
+recordTwistEvent(eventType) {
+    if (!this.stats.metaStats) {
+        this.stats.metaStats = {};
+    }
+    
+    switch(eventType) {
+        case 'twist_activated':
+            this.stats.metaStats.timesTwisted++;
+            break;
+        case 'reality_collapse':
+            this.stats.metaStats.timesCollapsed++;
+            break;
+        case 'termination':
+            this.stats.metaStats.timesTerminated++;
+            break;
+    }
+    
+    this.stats.metaStats.highestMetaLevel = Math.max(
+        this.stats.metaStats.highestMetaLevel || 0,
+        metaGame.metaLevel || 0
+    );
+    
+    this.saveStats();
+}
 }
 
 const statistics = new Statistics();
