@@ -140,3 +140,26 @@
 .hidden-message:hover {
     color: rgba(255, 255, 255, 0.8);
 }
+
+/* Meta Game Hints */
+.meta-hint {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(100, 100, 255, 0.1);
+    color: #8888ff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #8888ff;
+    font-size: 0.9rem;
+    z-index: 999;
+    animation: metaHintFade 4s ease;
+}
+
+@keyframes metaHintFade {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
