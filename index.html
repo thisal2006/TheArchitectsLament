@@ -43,6 +43,33 @@
 
     </div>
 
+    <style>
+    #twist-ending-screen {
+        font-family: 'Courier New', monospace;
+        text-rendering: geometricPrecision;
+    }
+    
+    #twist-ending-screen h1 {
+        font-size: 3rem;
+        margin-bottom: 30px;
+        animation: endingGlow 2s infinite alternate;
+    }
+    
+    @keyframes endingGlow {
+        from { text-shadow: 0 0 10px currentColor; }
+        to { text-shadow: 0 0 30px currentColor; }
+    }
+    
+    .ending-stats {
+        background: rgba(0, 0, 0, 0.7);
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 20px 0;
+        color: #888;
+    }
+</style>
+
     <script src="js/main.js"></script>
 </body>
 </html>
