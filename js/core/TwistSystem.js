@@ -127,28 +127,36 @@ class TwistSystem {
         }).join('');
     }
 
-    activateTwist() {
-        if (this.twistActivated) return;
-        
-        this.twistActivated = true;
-        this.realityShifted = true;
-        
-        console.log('TWIST ACTIVATED: Reality shift initiated');
-        
-        // Emit twist event
-        eventBus.emit('twist_activated', {
-            timestamp: new Date().toISOString(),
-            subjectId: saveSystem.subjectId,
-            hintsGiven: this.hintsGiven
-        });
-        
-        // Add to experiment logs
-        saveSystem.addExperimentLog(`Subject has triggered reality awareness.`);
-        saveSystem.addExperimentLog(`Initiating phase 2 of experiment.`);
-        
-        // Begin the big reveal
-        setTimeout(() => this.beginReveal(), 1000);
-    }
+activateTwist() {
+    if (this.twistActivated) return;
+    
+    this.twistActivated = true;
+    this.realityShifted = true;
+    
+    console.log('TWIST ACTIVATED: Reality shift initiated');
+    
+    // Add memory of this moment
+    memoryPersistence.addMemory({
+        id: 'twist_activation',
+        text: 'You remember awakening to the truth.',
+        act: window.game?.currentAct || 1,
+        moralScore: statistics.getStats().moralScore
+    });
+    
+    // Emit twist event
+    eventBus.emit('twist_activated', {
+        timestamp: new Date().toISOString(),
+        subjectId: saveSystem.subjectId,
+        hintsGiven: this.hintsGiven
+    });
+    
+    // Add to experiment logs
+    saveSystem.addExperimentLog(`Subject has triggered reality awareness.`);
+    saveSystem.addExperimentLog(`Initiating phase 2 of experiment.`);
+    
+    // Begin the big reveal
+    setTimeout(() => this.beginReveal(), 1000);
+}
 
     beginReveal() {
         // This will be expanded in future commits
