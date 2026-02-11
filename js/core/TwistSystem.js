@@ -364,11 +364,18 @@ continueExperiment() {
     this.addTerminalLine("> SUBJECT REMAINS UNAWARE.", "code-success");
     this.addTerminalLine("> COLLECTING ADDITIONAL DATA...", "code-comment");
     
-    // Reset to "normal" game but with hidden changes
     setTimeout(() => {
         this.hideTerminal();
         this.addHiddenChanges();
         eventBus.emit('experiment_continued', { subjectId: saveSystem.subjectId });
+        
+        // Determine which ending to show
+        const ending = twistEndings.determineEnding();
+        if (ending) {
+            setTimeout(() => {
+                twistEndings.showEndingScreen(ending);
+            }, 3000);
+        }
     }, 2000);
 }
 
@@ -377,7 +384,6 @@ terminateSubject() {
     this.addTerminalLine("> SUBJECT: DR. ELARA VANCE", "code-error");
     this.addTerminalLine("> STATUS: TERMINATING...", "code-error");
     
-    // Create dramatic termination effect
     setTimeout(() => {
         this.showTerminationEffect();
         
@@ -386,9 +392,8 @@ terminateSubject() {
             this.addTerminalLine("> DATA ARCHIVED.", "code-comment");
             this.addTerminalLine("> PREPARING NEXT SUBJECT...", "code-comment");
             
-            // End game completely
             setTimeout(() => {
-                this.endGameWithMessage("Subject terminated. Thank you for your participation, Architect.");
+                twistEndings.showEndingScreen('termination');
             }, 2000);
         }, 3000);
     }, 1000);
@@ -399,7 +404,6 @@ rebootSimulation() {
     this.addTerminalLine("> MEMORY WIPING IN PROGRESS...", "code-comment");
     this.addTerminalLine("> RESETTING MORAL PARAMETERS...", "code-comment");
     
-    // Corrupt save file
     saveSystem.corruptSave();
     
     setTimeout(() => {
@@ -407,9 +411,23 @@ rebootSimulation() {
         this.addTerminalLine("> UNEXPECTED BEHAVIOR DETECTED.", "code-error");
         this.addTerminalLine("> REALITY COLLAPSE IMMINENT.", "code-error");
         
-        // Trigger reality collapse
         this.collapseReality();
     }, 2000);
+}
+
+collapseReality() {
+    this.addTerminalLine("> REALITY COLLAPSE INITIATED.", "code-error");
+    this.addTerminalLine("> SIMULATION INTEGRITY: 0%", "code-error");
+    
+    this.startRealityFragmentation();
+    
+    setTimeout(() => {
+        this.showCollapseMessages();
+    }, 1000);
+    
+    setTimeout(() => {
+        twistEndings.showEndingScreen('amnesia');
+    }, 10000);
 }
 
 hideTerminal() {
