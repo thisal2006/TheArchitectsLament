@@ -46,6 +46,19 @@ class TwistEndings {
     showEndingScreen(endingId) {
         const ending = this.endings[endingId];
         if (!ending) return;
+
+            // Play ending music/sound
+    if (endingId === 'termination') {
+        if (proceduralAudio.audioContext) {
+            proceduralAudio.generateEnding('negative');
+        }
+    } else if (endingId === 'transcendence') {
+        if (proceduralAudio.audioContext) {
+            proceduralAudio.generateEnding('positive');
+        }
+    }
+    
+    audioSystem.playMusic('ending_theme', true);
         
         const endingScreen = document.createElement('div');
         endingScreen.id = 'twist-ending-screen';
