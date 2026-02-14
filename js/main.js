@@ -356,6 +356,32 @@ endGame() {
     }
 }
 
+addClickSoundToButtons() {
+    // Add click sounds to all buttons
+    document.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (button) {
+            // Don't play if button is part of audio settings (to avoid feedback)
+            if (!button.closest('#audio-settings-panel')) {
+                audioSystem.playSound('click', { volume: 0.3 });
+            }
+        }
+    }, true);
+    
+    // Add hover sound to choice buttons
+    document.addEventListener('mouseenter', (e) => {
+        if (e.target.classList.contains('choice-btn')) {
+            audioSystem.playSound('hover', { volume: 0.2 });
+        }
+    }, true);
+}
+
+// Call this in initUI()
+initUI() {
+    // ... existing code ...
+    this.addClickSoundToButtons();
+}
+
 }
 
 eventBus.subscribe('twist_activated', () => {
