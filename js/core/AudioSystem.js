@@ -447,6 +447,71 @@ generateMenuMusic() {
         audio: { volume: 0.03, _oscillators: [osc1, osc2] }
     };
 }
+
+setMusicVolume(volume, smooth = true) {
+    this.musicVolume = Math.max(0, Math.min(1, volume));
+    
+    if (this.currentMusic && this.currentMusic.audio) {
+        if (smooth) {
+            this.fadeTo(this.currentMusic.audio, this.musicVolume, 500);
+        } else {
+            this.currentMusic.audio.volume = this.musicVolume;
+        }
+    }
+    
+    this.saveSettings();
+    eventBus.emit('volume_changed', { type: 'music', volume: this.musicVolume });
+}
+
+fadeTo(audio, targetVolume, duration) {
+    const startTime = Date.now();
+    const startVolume = audio.volume;
+    
+    const fade = () => {
+        const now = Date.now();
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        audio.volume = startVolume + (targetVolume - startVolume) * progress;
+        
+        if (progress < 1) {
+            requestAnimationFrame(fade);
+        }
+    };
+    
+    requestAnimationFrame(fade);
+}
+
+crossfadeMusic(newMusicName, duration = 2000) {
+    if (!this.music[newMusicName] || !this.music[newMusicName].loaded) {
+        console.warn(`Cannot crossfade to ${newMusicName}: not loaded`);
+        return;
+    }
+    
+    // Fade out current music
+    if (this.currentMusic) {
+        this.fadeOut(this.currentMusic.audio, duration / 2);
+    }
+    
+    // Start new music at zero volume and fade in
+    setTimeout(() => {
+        const music = this.music[newMusicName];
+        const audio = music.audio.cloneNode();
+        audio.loop = music.loop;
+        audio.volume = 0;
+        audio.play();
+        
+        this.fadeIn(audio, this.musicVolume, duration / 2);
+        
+        this.currentMusic = {
+            name: newMusicName,
+            audio: audio
+        };
+        
+        eventBus.emit('music_changed', { name: newMusicName });
+    }, duration / 2);
+}
+
 }
 
 // Create global audio system instance
