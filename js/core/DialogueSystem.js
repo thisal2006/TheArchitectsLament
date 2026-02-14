@@ -84,23 +84,72 @@ class DialogueSystem {
         });
     }
 
-    makeChoice(choice) {
-        if (typeof soundSystem !== 'undefined') {
-            soundSystem.play('choice');
-        }
+makeChoice(choice) {
+    // Play choice sound
+    audioSystem.playSound('choice', { 
+        volume: 0.5,
+        pitch: choice.moralValue > 0 ? 1.2 : 0.8
+    });
+    
+    // Record choice
+    this.choiceHistory.push({
+        timestamp: new Date().toISOString(),
+        dialogueId: this.currentDialogue.id,
+        choiceId: choice.id,
+        choiceText: choice.text,
+        moralValue: choice.moralValue,
+        consequence: choice.consequence
+    });
 
-        eventBus.emit(Events.CHOICE_MADE, {
-            choice: choice,
-            dialogueId: this.currentDialogue.id
+    // Save to game state
+    if (saveSystem.currentSave) {
+        if (!saveSystem.currentSave.gameState.moralChoices) {
+            saveSystem.currentSave.gameState.moralChoices = [];
+        }
+        saveSystem.currentSave.gameState.moralChoices.push({
+            act: saveSystem.currentSave.gameState.currentAct || 1,
+            ...this.choiceHistory[this.choiceHistory.length - 1]
         });
-
-        if (choice.consequence) {
-            alert(choice.consequence);
-        }
-
-        this.currentDialogue = null;
-        this.choices = [];
+        saveSystem.saveGame(saveSystem.currentSave);
     }
+
+    // Emit events
+    eventBus.emit(EventTypes.CHOICE_MADE, {
+        choiceId: choice.id,
+        text: choice.text,
+        moralValue: choice.moralValue,
+        context: this.currentDialogue.context
+    });
+
+    if (choice.moralValue !== 0) {
+        eventBus.emit(EventTypes.MORAL_DECISION, {
+            choiceId: choice.id,
+            value: choice.moralValue,
+            isEthical: choice.moralValue > 0
+        });
+    }
+
+    console.log(`Choice selected: ${choice.text} (Moral: ${choice.moralValue})`);
+    
+    // Clear current dialogue
+    this.currentDialogue = null;
+    this.choices = [];
+    
+    return choice;
+}
+
+nextLine() {
+    if (this.currentLine < this.currentDialogue.lines.length - 1) {
+        this.currentLine++;
+        const nextLine = this.currentDialogue.lines[this.currentLine];
+        this.startTypewriter(nextLine);
+        
+        // Play typing sound
+        audioSystem.playSound('click', { volume: 0.1, pitch: 1.5 });
+        return true;
+    }
+    return false;
+}
 }
 
 const dialogueSystem = new DialogueSystem();
