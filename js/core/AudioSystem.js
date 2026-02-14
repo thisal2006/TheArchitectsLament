@@ -365,25 +365,88 @@ class AudioSystem {
 
     // Preload all audio assets
     preloadAll() {
-        // Register sound effects (using procedural generation as fallback)
-        this.registerSound('click', ['assets/sounds/click.mp3', 'assets/sounds/click.wav', 'assets/sounds/click.ogg']);
-        this.registerSound('choice', ['assets/sounds/choice.mp3', 'assets/sounds/choice.wav', 'assets/sounds/choice.ogg']);
-        this.registerSound('complete', ['assets/sounds/complete.mp3', 'assets/sounds/complete.wav', 'assets/sounds/complete.ogg']);
-        this.registerSound('error', ['assets/sounds/error.mp3', 'assets/sounds/error.wav', 'assets/sounds/error.ogg']);
-        this.registerSound('hover', ['assets/sounds/hover.mp3', 'assets/sounds/hover.wav', 'assets/sounds/hover.ogg']);
-        this.registerSound('save', ['assets/sounds/save.mp3', 'assets/sounds/save.wav', 'assets/sounds/save.ogg']);
-        this.registerSound('glitch', ['assets/sounds/glitch.mp3', 'assets/sounds/glitch.wav', 'assets/sounds/glitch.ogg']);
-        this.registerSound('reveal', ['assets/sounds/reveal.mp3', 'assets/sounds/reveal.wav', 'assets/sounds/reveal.ogg']);
-        
-        // Register background music
-        this.registerMusic('act1_sci_fi', 'assets/music/act1_ambient.mp3');
-        this.registerMusic('act2_fantasy', 'assets/music/act2_medieval.mp3');
-        this.registerMusic('act3_horror', 'assets/music/act3_horror.mp3');
-        this.registerMusic('act4_realism', 'assets/music/act4_office.mp3');
-        this.registerMusic('menu_theme', 'assets/music/menu_theme.mp3');
-        this.registerMusic('twist_theme', 'assets/music/twist_reveal.mp3');
-        this.registerMusic('ending_theme', 'assets/music/ending.mp3');
+    console.log('Preloading audio assets...');
+    
+    // Register sound effects (using procedural generation as fallback)
+    this.registerSound('click', ['assets/sounds/click.mp3', 'assets/sounds/click.wav', 'assets/sounds/click.ogg']);
+    this.registerSound('choice', ['assets/sounds/choice.mp3', 'assets/sounds/choice.wav', 'assets/sounds/choice.ogg']);
+    this.registerSound('complete', ['assets/sounds/complete.mp3', 'assets/sounds/complete.wav', 'assets/sounds/complete.ogg']);
+    this.registerSound('error', ['assets/sounds/error.mp3', 'assets/sounds/error.wav', 'assets/sounds/error.ogg']);
+    this.registerSound('hover', ['assets/sounds/hover.mp3', 'assets/sounds/hover.wav', 'assets/sounds/hover.ogg']);
+    this.registerSound('save', ['assets/sounds/save.mp3', 'assets/sounds/save.wav', 'assets/sounds/save.ogg']);
+    this.registerSound('glitch', ['assets/sounds/glitch.mp3', 'assets/sounds/glitch.wav', 'assets/sounds/glitch.ogg']);
+    this.registerSound('reveal', ['assets/sounds/reveal.mp3', 'assets/sounds/reveal.wav', 'assets/sounds/reveal.ogg']);
+    
+    // Register background music
+    this.registerMusic('act1_sci_fi', 'assets/music/act1_ambient.mp3');
+    this.registerMusic('act2_fantasy', 'assets/music/act2_medieval.mp3');
+    this.registerMusic('act3_horror', 'assets/music/act3_horror.mp3');
+    this.registerMusic('act4_realism', 'assets/music/act4_office.mp3');
+    this.registerMusic('menu_theme', 'assets/music/menu_theme.mp3');
+    this.registerMusic('twist_theme', 'assets/music/twist_reveal.mp3');
+    this.registerMusic('ending_theme', 'assets/music/ending.mp3');
+    
+    // Start preloading
+    setTimeout(() => {
+        // Play menu music after preload
+        this.playMenuMusic();
+    }, 1000);
+}
+
+playMenuMusic() {
+    // Don't play if game has already started
+    if (window.game && window.game.currentAct > 0) return;
+    
+    // Use procedural generation as fallback if files don't exist
+    if (!this.music.menu_theme || !this.music.menu_theme.loaded) {
+        // Generate procedural menu music
+        if (proceduralAudio.audioContext) {
+            this.generateMenuMusic();
+        }
+    } else {
+        this.playMusic('menu_theme', true);
     }
+}
+
+generateMenuMusic() {
+    if (!proceduralAudio.audioContext) return;
+    
+    console.log('Generating procedural menu music...');
+    
+    const now = proceduralAudio.audioContext.currentTime;
+    
+    // Create ambient pad
+    const osc1 = proceduralAudio.audioContext.createOscillator();
+    const osc2 = proceduralAudio.audioContext.createOscillator();
+    const gainNode = proceduralAudio.audioContext.createGain();
+    const filter = proceduralAudio.audioContext.createBiquadFilter();
+    
+    osc1.type = 'sine';
+    osc1.frequency.value = 110; // A2
+    
+    osc2.type = 'sine';
+    osc2.frequency.value = 220; // A3
+    
+    filter.type = 'lowpass';
+    filter.frequency.value = 400;
+    
+    gainNode.gain.setValueAtTime(0.03, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 30);
+    
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(proceduralAudio.audioContext.destination);
+    
+    osc1.start(now);
+    osc2.start(now);
+    
+    // Store as current music
+    this.currentMusic = {
+        name: 'menu_theme',
+        audio: { volume: 0.03, _oscillators: [osc1, osc2] }
+    };
+}
 }
 
 // Create global audio system instance
