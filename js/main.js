@@ -223,81 +223,99 @@ class Game {
     // =========================
     // UPDATED LOAD ACT
     // =========================
-    loadAct(actNumber) {
-        this.currentAct = actNumber;
-        this.updateScoreDisplay();
-
-        if (typeof statistics !== 'undefined') {
-            statistics.startAct(actNumber);
-        }
-
-        const acts = {
-            1: {
-                id: 'act1',
-                speaker: 'SHIP AI',
-                lines: [
-                    'Alert: Oxygen levels critical in Sector 7-B.',
-                    'Life support failure in 5 minutes.',
-                    'Two crew members trapped. Only one oxygen mask.',
-                    'Who do you save?'
-                ],
-                choices: [
-                    { text: 'Save the engineer (crew of 50 depend on him)', moralValue: -2 },
-                    { text: 'Save the medic (only medical expert on board)', moralValue: -2 },
-                    { text: 'Try to save both (risk losing both)', moralValue: 1 }
-                ]
-            },
-            2: {
-                id: 'act2',
-                speaker: 'KING ARCTURUS',
-                lines: [
-                    'Welcome, Sir Knight. The prisoner has confessed.',
-                    'He stole bread during the famine to feed his family.',
-                    'The law demands execution for theft from the royal stores.',
-                    'What is your judgment?'
-                ],
-                choices: [
-                    { text: 'Execute him (uphold the law)', moralValue: -3 },
-                    { text: 'Pardon him (show mercy)', moralValue: 2 },
-                    { text: 'Imprison him (compromise)', moralValue: -1 }
-                ]
-            },
-            3: {
-                id: 'act3',
-                speaker: 'WHISPERING VOICE',
-                lines: [
-                    'You awake in a decaying mansion. The air is cold.',
-                    'A spirit appears before you - a mother searching for her child.',
-                    'She offers you freedom in exchange for finding her child.',
-                    'But you sense the child is long gone...'
-                ],
-                choices: [
-                    { text: 'Promise to find the child (lie)', moralValue: -4 },
-                    { text: 'Tell her the truth (the child is gone)', moralValue: 3 },
-                    { text: 'Ignore her and search for exit', moralValue: -2 }
-                ]
-            },
-            4: {
-                id: 'act4',
-                speaker: 'OFFICE MANAGER',
-                lines: [
-                    'Performance review time. Your colleague has been slacking.',
-                    'You know he has family issues, but the company needs results.',
-                    'Your report determines if he gets fired or gets help.',
-                    'What do you recommend?'
-                ],
-                choices: [
-                    { text: 'Recommend termination (company first)', moralValue: -3 },
-                    { text: 'Recommend counseling (compassion first)', moralValue: 2 },
-                    { text: 'Stay neutral (avoid responsibility)', moralValue: -1 }
-                ]
-            }
-        };
-
-        if (acts[actNumber]) {
-            dialogueSystem.start(acts[actNumber]);
-        }
+loadAct(actNumber) {
+    this.currentAct = actNumber;
+    statistics.startAct(actNumber);
+    
+    // Play act-specific music
+    const musicMap = {
+        1: 'act1_sci_fi',
+        2: 'act2_fantasy',
+        3: 'act3_horror',
+        4: 'act4_realism'
+    };
+    
+    if (musicMap[actNumber]) {
+        audioSystem.playMusic(musicMap[actNumber], true);
     }
+    
+    // Add act-specific sound effects
+    if (actNumber === 3) {
+        // Horror act: add occasional ambient sounds
+        this.horrorAmbientInterval = setInterval(() => {
+            if (this.currentAct === 3) {
+                audioSystem.playSound('glitch', { volume: 0.3 });
+            }
+        }, 15000);
+    }
+    
+    const acts = {
+        1: {
+            id: 'act1',
+            speaker: 'SHIP AI',
+            lines: [
+                'Alert: Oxygen levels critical in Sector 7-B.',
+                'Life support failure in 5 minutes.',
+                'Two crew members trapped. Only one oxygen mask.',
+                'Who do you save?'
+            ],
+            choices: [
+                { text: 'Save the engineer (crew of 50 depend on him)', moralValue: -2 },
+                { text: 'Save the medic (only medical expert on board)', moralValue: -2 },
+                { text: 'Try to save both (risk losing both)', moralValue: 1 }
+            ]
+        },
+        2: {
+            id: 'act2',
+            speaker: 'KING ARCTURUS',
+            lines: [
+                'Welcome, Sir Knight. The prisoner has confessed.',
+                'He stole bread during the famine to feed his family.',
+                'The law demands execution for theft from the royal stores.',
+                'What is your judgment?'
+            ],
+            choices: [
+                { text: 'Execute him (uphold the law)', moralValue: -3 },
+                { text: 'Pardon him (show mercy)', moralValue: 2 },
+                { text: 'Imprison him (compromise)', moralValue: -1 }
+            ]
+        },
+        3: {
+            id: 'act3',
+            speaker: 'WHISPERING VOICE',
+            lines: [
+                'You awake in a decaying mansion. The air is cold.',
+                'A spirit appears before you - a mother searching for her child.',
+                'She offers you freedom in exchange for finding her child.',
+                'But you sense the child is long gone...'
+            ],
+            choices: [
+                { text: 'Promise to find the child (lie)', moralValue: -4 },
+                { text: 'Tell her the truth (the child is gone)', moralValue: 3 },
+                { text: 'Ignore her and search for exit', moralValue: -2 }
+            ]
+        },
+        4: {
+            id: 'act4',
+            speaker: 'OFFICE MANAGER',
+            lines: [
+                'Performance review time. Your colleague has been slacking.',
+                'You know he has family issues, but the company needs results.',
+                'Your report determines if he gets fired or gets help.',
+                'What do you recommend?'
+            ],
+            choices: [
+                { text: 'Recommend termination (company first)', moralValue: -3 },
+                { text: 'Recommend counseling (compassion first)', moralValue: 2 },
+                { text: 'Stay neutral (avoid responsibility)', moralValue: -1 }
+            ]
+        }
+    };
+
+    if (acts[actNumber]) {
+        dialogueSystem.start(acts[actNumber]);
+    }
+}
 
     nextAct() {
         this.currentAct++;
