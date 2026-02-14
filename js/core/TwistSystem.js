@@ -1,3 +1,4 @@
+
 class TwistSystem {
     constructor() {
         this.realityShifted = false;
@@ -683,6 +684,95 @@ modifyExistingDialogue() {
     // This would modify existing dialogue to include meta-references
     // For now, we'll just add a log entry
     saveSystem.addExperimentLog("Subject returned to simulation with hidden modifications.");
+}
+
+giveHint() {
+    if (this.hintsGiven >= this.maxHints) return;
+    
+    const hint = this.hintMessages[this.hintsGiven];
+    this.hintsGiven++;
+    
+    // Play glitch sound for hints
+    audioSystem.playSound('glitch', { volume: 0.4 });
+    
+    // Show hint as a subtle message
+    this.showHintMessage(hint);
+    
+    console.log(`Twist hint ${this.hintsGiven}/${this.maxHints}: ${hint}`);
+    
+    // Save hint given
+    saveSystem.addExperimentLog(`Hint given to subject: ${hint}`);
+    
+    if (this.hintsGiven >= this.maxHints) {
+        this.activateTwist();
+    }
+}
+
+activateTwist() {
+    if (this.twistActivated) return;
+    
+    this.twistActivated = true;
+    this.realityShifted = true;
+    
+    // Play twist reveal sound
+    if (proceduralAudio.audioContext) {
+        proceduralAudio.generateTwistReveal();
+    } else {
+        audioSystem.playSound('reveal', { volume: 0.8 });
+    }
+    
+    // Change music to twist theme
+    audioSystem.playMusic('twist_theme', true);
+    
+    console.log('TWIST ACTIVATED: Reality shift initiated');
+    
+    // Add memory of this moment
+    memoryPersistence.addMemory({
+        id: 'twist_activation',
+        text: 'You remember awakening to the truth.',
+        act: window.game?.currentAct || 1,
+        moralScore: statistics.getStats().moralScore
+    });
+    
+    // Emit twist event
+    eventBus.emit('twist_activated', {
+        timestamp: new Date().toISOString(),
+        subjectId: saveSystem.subjectId,
+        hintsGiven: this.hintsGiven
+    });
+    
+    // Add to experiment logs
+    saveSystem.addExperimentLog(`Subject has triggered reality awareness.`);
+    saveSystem.addExperimentLog(`Initiating phase 2 of experiment.`);
+    
+    // Begin the big reveal
+    setTimeout(() => this.beginReveal(), 1000);
+}
+
+collapseReality() {
+    this.addTerminalLine("> REALITY COLLAPSE INITIATED.", "code-error");
+    this.addTerminalLine("> SIMULATION INTEGRITY: 0%", "code-error");
+    
+    // Play collapse sound effects
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            if (proceduralAudio.audioContext) {
+                proceduralAudio.generateGlitch();
+            } else {
+                audioSystem.playSound('glitch', { volume: 0.3, pitch: 0.5 + i * 0.2 });
+            }
+        }, i * 200);
+    }
+    
+    this.startRealityFragmentation();
+    
+    setTimeout(() => {
+        this.showCollapseMessages();
+    }, 1000);
+    
+    setTimeout(() => {
+        twistEndings.showEndingScreen('amnesia');
+    }, 10000);
 }
 
 }
