@@ -71,5 +71,20 @@
 </style>
 
     <script src="js/main.js"></script>
+    <!-- Audio Systems -->
+    <script src="js/core/ProceduralAudio.js"></script>
+    <script src="js/core/AudioSystem.js"></script>
+    <script src="js/ui/AudioSettings.js"></script>
+    <script src="js/ui/AudioIndicator.js"></script>
+    <script src="js/scenes/AudioTestScene.js"></script>
+
+    <!-- Preload audio after page load -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                audioSystem.preloadAll();
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
