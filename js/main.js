@@ -35,6 +35,9 @@ class Game {
         `;
         document.body.appendChild(this.scoreDisplay);
 
+        this.addClickSoundToButtons();
+        const audioIndicator = new AudioIndicator();
+
         this.skipButton = document.createElement('button');
         this.skipButton.textContent = 'Skip (Space)';
         this.skipButton.style.cssText = `
@@ -374,12 +377,6 @@ addClickSoundToButtons() {
             audioSystem.playSound('hover', { volume: 0.2 });
         }
     }, true);
-}
-
-// Call this in initUI()
-initUI() {
-    // ... existing code ...
-    this.addClickSoundToButtons();
 }
 
 }
