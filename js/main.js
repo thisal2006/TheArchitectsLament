@@ -70,6 +70,53 @@ class Game {
             }
         });
 
+        const audioBtn = document.createElement('button');
+    audioBtn.textContent = '🔊 AUDIO SETTINGS';
+    audioBtn.className = 'btn-secondary';
+    audioBtn.style.marginTop = '10px';
+    audioBtn.style.background = 'linear-gradient(90deg, #663399, #8844aa)';
+    audioBtn.onclick = () => audioSettings.toggle();
+    
+    // Add to menu
+    const menu = document.querySelector('.menu');
+    if (menu) {
+        menu.appendChild(audioBtn);
+    }
+    
+    // Add quick audio button to game screen
+    this.quickAudioBtn = document.createElement('button');
+    this.quickAudioBtn.textContent = '🔊';
+    this.quickAudioBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 10px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #00aaff;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    this.quickAudioBtn.onclick = () => audioSettings.toggle();
+    document.body.appendChild(this.quickAudioBtn);
+    
+    // Subscribe to audio events for visual feedback
+    eventBus.subscribe('mute_toggled', (data) => {
+        this.quickAudioBtn.textContent = data.muted ? '🔇' : '🔊';
+        this.quickAudioBtn.style.borderColor = data.muted ? '#ff6666' : '#00aaff';
+    });
+    
+    eventBus.subscribe('music_changed', (data) => {
+        console.log(`Now playing: ${data.name}`);
+    });
+
         this.updateScoreDisplay();
     }
 
