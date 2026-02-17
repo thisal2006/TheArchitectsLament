@@ -20,7 +20,7 @@ class Game {
     // UI INITIALIZATION
     // =========================
     initUI() {
-
+        
         this.scoreDisplay = document.createElement('div');
         this.scoreDisplay.id = 'moral-score';
         this.scoreDisplay.style.cssText = `
@@ -79,6 +79,13 @@ class Game {
     audioBtn.style.marginTop = '10px';
     audioBtn.style.background = 'linear-gradient(90deg, #663399, #8844aa)';
     audioBtn.onclick = () => audioSettings.toggle();
+    // Add achievements button to title screen
+    const achievementsBtn = document.createElement('button');
+    achievementsBtn.textContent = '🏆 ACHIEVEMENTS';
+    achievementsBtn.className = 'btn-secondary';
+    achievementsBtn.style.marginTop = '10px';
+    achievementsBtn.style.background = 'linear-gradient(90deg, #b8860b, #daa520)';
+    achievementsBtn.onclick = () => achievementsUI.toggle();
     
     // Add to menu
     const menu = document.querySelector('.menu');

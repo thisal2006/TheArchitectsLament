@@ -189,3 +189,9 @@ button:hover {
 .btn-danger:hover {
     background: linear-gradient(90deg, #cc0000, #ff3333);
 }
+
+@keyframes achievementPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 gold; }
+    50% { transform: scale(1.2); box-shadow: 0 0 20px gold; }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 gold; }
+}
