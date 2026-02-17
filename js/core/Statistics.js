@@ -9,10 +9,12 @@ class Statistics {
             slowestAct: null,
             mostCommonChoice: null,
             choiceDistribution: {}
+            
         };
         
         this.startTimes = {};
         this.loadStats();
+        this.achievementPoints = 0;
     }
 
     startAct(actNumber) {
@@ -170,6 +172,45 @@ recordTwistEvent(eventType) {
     
     this.saveStats();
 }
+
+    recordAchievementUnlocked(achievement) {
+        this.stats.achievementPoints = (this.stats.achievementPoints || 0) + achievement.points;
+        this.stats.totalAchievements = (this.stats.totalAchievements || 0) + 1;
+        
+        // Record which achievement
+        if (!this.stats.achievements) {
+            this.stats.achievements = [];
+        }
+        this.stats.achievements.push({
+            id: achievement.id,
+            name: achievement.name,
+            points: achievement.points,
+            timestamp: new Date().toISOString()
+        });
+
+        this.saveStats();
+    }
+
+    getLeaderboardStats() {
+        return {
+            totalPlayTime: this.formatTime(this.stats.totalPlayTime),
+            totalChoices: this.stats.totalChoices,
+            moralScore: this.stats.moralScore,
+            actsCompleted: this.stats.actsCompleted,
+            achievementPoints: this.stats.achievementPoints || 0,
+            achievementsUnlocked: this.stats.totalAchievements || 0,
+            fastestAct: this.stats.fastestAct,
+            slowestAct: this.stats.slowestAct
+        };
+    }
+
+    formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hours}h ${minutes}m ${secs}s`;
+    }
+
 }
 
 const statistics = new Statistics();
