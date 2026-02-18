@@ -610,6 +610,60 @@ class Achievements {
         }
     }
 
+    checkGitDates() {
+    // Secret achievement for noticing future dates
+    const today = new Date();
+    const gitDate = new Date('2026-02-16'); // Our first future commit
+    
+    // Check if player has been paying attention
+    return localStorage.getItem('architect_noticed_dates') === 'true';
+}
+
+    // Add method to notice the dates
+    noticeFutureDates() {
+        localStorage.setItem('architect_noticed_dates', 'true');
+        this.check('meta_aware', this.getCurrentStats());
+        
+        // Show special message
+        const message = document.createElement('div');
+        message.innerHTML = `
+            <div style="text-align: center;">
+                <h3 style="color: #ff00ff;">🔮 YOU NOTICED 🔮</h3>
+                <p>The commits are from the future...</p>
+                <p style="color: #888; font-size: 0.8rem;">Or are they?</p>
+            </div>
+        `;
+        // Show as modal
+        this.showMetaMessage(message);
+    }
+
+    showMetaMessage(content) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 30px;
+            z-index: 20000;
+            color: white;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 50px #ff00ff;
+        `;
+        
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        
+        setTimeout(() => {
+            modal.style.transition = 'opacity 1s';
+            modal.style.opacity = '0';
+            setTimeout(() => modal.remove(), 1000);
+        }, 5000);
+    }
+
 }
 
 const achievements = new Achievements();
