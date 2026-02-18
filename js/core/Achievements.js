@@ -485,6 +485,131 @@ class Achievements {
             unlockedAt: this.unlocked.find(a => a.id === achievement.id)?.unlockedAt
         }));
     }
+
+    listenForEvents() {
+    // Listen to game events to check achievements
+    eventBus.subscribe('choice_made', (data) => {
+        this.checkAll();
+        this.checkSpecialChoiceAchievements(data);
+    });
+    
+    eventBus.subscribe('act_completed', (data) => {
+        this.checkAll();
+        this.checkActCompletionAchievements(data);
+    });
+    
+    eventBus.subscribe('game_ended', () => {
+        this.checkAll();
+        this.checkGameCompletionAchievements();
+    });
+    
+    eventBus.subscribe('twist_activated', () => {
+        this.checkAll();
+        this.checkTwistAchievements();
+    });
+    
+    eventBus.subscribe('ending_reached', (data) => {
+        this.recordEnding(data.endingId);
+        this.checkAll();
+        this.checkEndingAchievements(data);
+    });
+
+    // Special achievements
+    eventBus.subscribe('konami_entered', () => {
+        this.konamiEntered = true;
+        this.check('konami', this.getCurrentStats());
+    });
+
+    // Check every 5 minutes for time-based achievements
+    setInterval(() => {
+        this.checkTimeBasedAchievements();
+    }, 300000);
+}
+
+    checkSpecialChoiceAchievements(data) {
+        // Check for unique choice patterns
+        const choices = saveSystem.currentSave?.gameState?.moralChoices || [];
+        
+        // Check for first choice being sacrificial
+        if (choices.length === 1 && data.choice.moralValue < -5) {
+            this.check('first_sacrifice', this.getCurrentStats());
+        }
+        
+        // Check for perfect score in act
+        const currentActChoices = choices.filter(c => c.act === this.currentAct);
+        if (currentActChoices.length >= 3) {
+            const actScore = currentActChoices.reduce((sum, c) => sum + (c.moralValue || 0), 0);
+            if (actScore === 0) {
+                this.check('balanced_act', this.getCurrentStats());
+            }
+        }
+    }
+
+    checkActCompletionAchievements(data) {
+        // Speed run check
+        const actTime = statistics.startTimes[data.act] ? 
+            (Date.now() - statistics.startTimes[data.act]) / 1000 : 0;
+        
+        if (actTime < 300) { // Under 5 minutes
+            this.check('speed_act', this.getCurrentStats());
+        }
+    }
+
+    checkGameCompletionAchievements() {
+        // Check for no saves used
+        if (saveSystem.saveCount === 1) {
+            this.check('iron_will', this.getCurrentStats());
+        }
+        
+        // Check for all acts completed without reload
+        if (!saveSystem.hasLoaded) {
+            this.check('pure_run', this.getCurrentStats());
+        }
+    }
+
+    checkTwistAchievements() {
+        // Check if twist was discovered early
+        if (this.currentAct < 3) {
+            this.check('early_awakening', this.getCurrentStats());
+        }
+        
+        // Check if all hints were collected
+        if (twistSystem.hintsGiven >= twistSystem.maxHints) {
+            this.check('truth_seeker', this.getCurrentStats());
+        }
+    }
+
+    checkEndingAchievements(data) {
+        // Check for specific ending combinations
+        if (data.endingId === 'transcendence' && this.metaLevel >= 7) {
+            this.check('enlightened', this.getCurrentStats());
+        }
+        
+        // Check for multiple endings
+        const endings = this.getUnlockedEndings();
+        if (endings.length >= 3) {
+            this.check('ending_collector', this.getCurrentStats());
+        }
+    }
+
+    checkTimeBasedAchievements() {
+        const stats = this.getCurrentStats();
+        
+        // Check for long play sessions
+        if (stats.totalPlayTime > 3600) { // 1 hour
+            this.check('dedicated', stats);
+        }
+        
+        if (stats.totalPlayTime > 10800) { // 3 hours
+            this.check('devoted', stats);
+        }
+        
+        // Check for multiple sessions
+        if (this.sessionCount >= 5) {
+            this.check('returning', stats);
+        }
+    }
+
 }
 
 const achievements = new Achievements();
