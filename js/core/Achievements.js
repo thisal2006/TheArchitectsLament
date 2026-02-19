@@ -664,6 +664,55 @@ class Achievements {
         }, 5000);
     }
 
+    unlock(achievementId) {
+    if (this.isUnlocked(achievementId)) return;
+
+    const achievement = this.achievements[achievementId];
+    this.unlocked.push({
+        id: achievementId,
+        unlockedAt: new Date().toISOString()
+    });
+
+    // Save progress
+    this.saveProgress();
+
+    // Show notification
+    this.showNotification(achievement);
+
+    // Play achievement sound with variations based on points
+    const pointValue = achievement.points;
+    if (pointValue >= 500) {
+        // Epic achievement sound
+        if (proceduralAudio.audioContext) {
+            proceduralAudio.generateEnding('positive');
+        } else {
+            audioSystem.playSound('complete', { volume: 0.7, pitch: 1.5 });
+        }
+    } else if (pointValue >= 200) {
+        // Rare achievement sound
+        audioSystem.playSound('complete', { volume: 0.6, pitch: 1.2 });
+    } else {
+        // Normal achievement sound
+        audioSystem.playSound('complete', { volume: 0.5 });
+    }
+
+    // Add screen flash for epic achievements
+    if (pointValue >= 500) {
+        Effects.flash('gold', 500);
+    }
+
+    // Emit event
+    eventBus.emit('achievement_unlocked', {
+        achievement: achievement,
+        totalUnlocked: this.unlocked.length
+    });
+
+    // Record in statistics
+    statistics.recordAchievementUnlocked(achievement);
+
+    console.log(`🏆 Achievement Unlocked: ${achievement.name} (+${achievement.points})`);
+}
+
 }
 
 const achievements = new Achievements();
