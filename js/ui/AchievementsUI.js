@@ -113,6 +113,11 @@ class AchievementsUI {
         this.panel.appendChild(closeBtn);
 
         document.body.appendChild(this.panel);
+
+        
+
+        
+
     }
 
     show() {
