@@ -1,0 +1,91 @@
+/* Achievement Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px gold;
+    }
+    50% {
+        box-shadow: 0 0 20px gold;
+    }
+    100% {
+        box-shadow: 0 0 5px gold;
+    }
+}
+
+.achievement-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.achievement-card.unlocked {
+    animation: glow 2s infinite;
+}
+
+.achievement-notification {
+    animation: slideIn 0.5s ease-out;
+}
+
+.achievement-notification.hiding {
+    animation: slideOut 0.5s ease-in forwards;
+}
+
+.achievement-counter {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid gold;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: gold;
+    font-weight: bold;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 999;
+    transition: all 0.3s;
+}
+
+.achievement-counter:hover {
+    transform: scale(1.1);
+    background: rgba(255, 215, 0, 0.2);
+}
+
+.achievement-counter.new {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
